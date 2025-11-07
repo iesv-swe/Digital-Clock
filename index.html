@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Clock</title>
-    <!-- We'll use the 'Inter' font from Google Fonts for a clean look --><link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- Google Font 'Inter' -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* This CSS makes the clock full-screen and centers the content */
         html, body {
             height: 100%;
             margin: 0;
@@ -20,111 +21,152 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Stack the time and date vertically */
-
-            background-color: #000000; /* Black background for a kiosk */
-            color: #FFFFFF; /* White text */
+            flex-direction: column;
+            background-color: #000000;
+            color: #FFFFFF;
             font-family: 'Inter', sans-serif;
-            
             /* Prevents text selection */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            /* Ensure smooth rendering of the flip */
+            transform-style: preserve-3d;
         }
 
-        /* The main container for the clock */
         .clock-container {
             text-align: center;
-            /* >>> New CSS for 180-degree rotation <<< */
+            /* Flips the clock 180 degrees */
             transform: rotate(180deg); 
         }
 
-        /* Styling for the time (e.g., 2:19:45 PM) */
         #time {
-            /* Using 'vw' (viewport width) makes the font size responsive.
-              It will be 15% of the screen's width. Adjust as needed.
-            */
             font-size: 15vw;
             font-weight: 700;
             line-height: 1.1;
-            
-            /* A subtle shadow gives it a digital 'glow' effect */
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
-        /* Styling for the date (e.g., Friday, October 24, 2025) */
         #date {
             font-size: 4vw;
             font-weight: 400;
-            opacity: 0.8; /* Make it slightly less bright than the time */
+            opacity: 0.8;
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- This is the HTML structure for the clock --><main class="clock-container">
-        <div id="time">12:00:00 AM</div>
-        <div id="date">January 1, 2025</div>
+    <main class="clock-container">
+        <!-- The time and date will be filled in by JavaScript -->
+        <div id="time">4:47:00 PM</div>
+        <div id="date">fredag 7 november 2025</div>
     </main>
 
-    <!-- This JavaScript runs the clock --><script>
-        // Get the HTML elements we need to update
+    <script>
+        // --- Clock Update Logic ---
+
         const timeElement = document.getElementById('time');
         const dateElement = document.getElementById('date');
 
-        /**
-         * This function updates the clock and date.
-         */
         function updateClock() {
-            const now = new Date();
+            const now = new Date(); // This will use the Chromebook's local time
 
-            // --- Format the Time ---
-            let hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-
-            // Convert to 12-hour format
-            hours = hours % 12;
-            hours = hours ? hours : 12; // The hour '0' should be '12'
-
-            // Add leading zeros to minutes and seconds
-            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
-
-            const timeString = `${hours}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
-
-            // --- Format the Date ---
+            // Format Time
+            let hours = now.getHours(); // 16 (for 4 PM)
+            const minutes = now.getMinutes(); // 47
+            const seconds = now.getSeconds(); // 00
+            const ampm = hours >= 12 ? 'PM' : 'AM'; // PM
             
-            // Using Intl.DateTimeFormat is the best way to get a localized date.
-            // Using 'undefined' for the locale will use the browser's default
-            // (e.g., 'sv-SE' for Sweden), which is perfect for you.
+            hours = hours % 12; // 16 % 12 = 4
+            hours = hours ? hours : 12; // 4 (The hour '0' would be '12' for midnight)
+            
+            // Add leading zeros
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // 47
+            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds; // 00
+            
+            const timeString = `${hours}:${formattedMinutes}:${formattedSeconds} ${ampm}`; // "4:47:00 PM"
+
+            // Format Date (uses browser's local language)
+            // Since your location is Sweden, this should automatically 
+            // format the date correctly (e.g., "fredag 7 november 2025")
             const dateOptions = {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             };
-            // Since you're in Sweden, this should automatically format to something
-            // like "fredag 24 oktober 2025"
+            // 'undefined' locale uses the system's default (Swedish in your case)
             const dateString = new Intl.DateTimeFormat(undefined, dateOptions).format(now);
             
-            // --- Update the HTML ---
+            // Update HTML
             timeElement.textContent = timeString;
             dateElement.textContent = dateString;
         }
 
-        // --- Run the Clock ---
-        
-        // 1. Run the clock immediately on load so we don't see a "12:00:00" flash
+        // Run clock immediately on load
         updateClock(); 
         
-        // 2. Set an interval to run the updateClock function every 1000ms (1 second)
+        // Update clock every second
         setInterval(updateClock, 1000);
+
+
+        // --- Screen Wake Lock (to prevent sleep) ---
+
+        let wakeLock = null;
+
+        /**
+         * This function aggressively requests the Screen Wake Lock.
+         * It "jiggles" the lock by releasing any old one
+         * and requesting a new one.
+         */
+        const forceWakeLock = async () => {
+            // Check if the API is supported
+            if ('wakeLock' in navigator) {
+                try {
+                    // Release any existing lock. This is the "jiggle".
+                    if (wakeLock) {
+                        await wakeLock.release();
+                        wakeLock = null;
+                        console.log('Released existing Wake Lock for "jiggle".');
+                    }
+                    
+                    // Request a new lock
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Screen Wake Lock acquired/refreshed.');
+
+                    // Listen for release events (e.g., system override)
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Screen Wake Lock was released by the system.');
+                        wakeLock = null;
+                    });
+
+                } catch (err) {
+                    // This can happen if the page is not visible
+                    console.error('Failed to acquire Wake Lock:', err.name, err.message);
+                }
+            } else {
+                console.log('Screen Wake Lock API is not supported.');
+            }
+        };
+
+        // 1. Request the lock immediately on load.
+        forceWakeLock();
+
+        // 2. Re-request (jiggle) the lock every 5 minutes (300,000 milliseconds)
+        //    This fights any "ghost policies".
+        setInterval(forceWakeLock, 300000);
+
+        // 3. Re-request the lock immediately when the tab becomes visible
+        //    (in case the Kiosk app lost focus and released the lock)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('Page is visible again, forcing Wake Lock.');
+                forceWakeLock();
+            }
+        });
+
     </script>
 
 </body>
 </html>
-
