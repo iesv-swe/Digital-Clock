@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Clock</title>
+    <title>Digital & Analog Clock</title>
     
     <!-- Google Font 'Inter' -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,28 +25,117 @@
             background-color: #000000;
             color: #FFFFFF;
             font-family: 'Inter', sans-serif;
-            /* Prevents text selection */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            /* Ensure smooth rendering of the flip */
             transform-style: preserve-3d;
         }
 
         .clock-container {
             text-align: center;
-            /* Flips the clock 180 degrees */
+            /* Flips the entire container 180 degrees */
             transform: rotate(180deg); 
+            /* This container will hold the date and the swappable clock */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        #time {
+        /* --- Digital Clock --- */
+        #digital-clock {
             font-size: 15vw;
             font-weight: 700;
             line-height: 1.1;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            /* 'display' will be toggled by JS */
         }
 
+        /* --- Analog Clock --- */
+        #analog-clock {
+            width: 50vw; /* Responsive width */
+            height: 50vw; /* Responsive height */
+            /* 'display' will be toggled by JS */
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2vw; /* Add some space between clock and date */
+        }
+
+        .clock-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 0.5vw solid white;
+            border-radius: 50%;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background-color: white;
+        }
+
+        .hour-hand {
+            width: 1.2vw;
+            height: 25%;
+            transform: translateX(-50%);
+            border-radius: 0.6vw 0.6vw 0 0;
+        }
+
+        .minute-hand {
+            width: 0.8vw;
+            height: 35%;
+            transform: translateX(-50%);
+            border-radius: 0.4vw 0.4vw 0 0;
+        }
+
+        .second-hand {
+            width: 0.3vw;
+            height: 40%;
+            transform: translateX(-50%);
+            background-color: #FF0000; /* Red second hand */
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2vw;
+            height: 2vw;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3vw;
+            font-weight: 700;
+        }
+
+        /* Position each number around the clock */
+        .n1 { transform: translate(-50%, -50%) rotate(30deg) translate(0, -21vw) rotate(-30deg); }
+        .n2 { transform: translate(-50%, -50%) rotate(60deg) translate(0, -21vw) rotate(-60deg); }
+        .n3 { transform: translate(-50%, -50%) rotate(90deg) translate(0, -21vw) rotate(-90deg); }
+        .n4 { transform: translate(-50%, -50%) rotate(120deg) translate(0, -21vw) rotate(-120deg); }
+        .n5 { transform: translate(-50%, -50%) rotate(150deg) translate(0, -21vw) rotate(-150deg); }
+        .n6 { transform: translate(-50%, -50%) rotate(180deg) translate(0, -21vw) rotate(-180deg); }
+        .n7 { transform: translate(-50%, -50%) rotate(210deg) translate(0, -21vw) rotate(-210deg); }
+        .n8 { transform: translate(-50%, -50%) rotate(240deg) translate(0, -21vw) rotate(-240deg); }
+        .n9 { transform: translate(-50%, -50%) rotate(270deg) translate(0, -21vw) rotate(-270deg); }
+        .n10 { transform: translate(-50%, -50%) rotate(300deg) translate(0, -21vw) rotate(-300deg); }
+        .n11 { transform: translate(-50%, -50%) rotate(330deg) translate(0, -21vw) rotate(-330deg); }
+        .n12 { transform: translate(-50%, -50%) rotate(360deg) translate(0, -21vw) rotate(-360deg); }
+
+
+        /* --- Date (visible for both) --- */
         #date {
             font-size: 4vw;
             font-weight: 400;
@@ -58,49 +147,94 @@
 <body>
 
     <main class="clock-container">
-        <!-- The time and date will be filled in by JavaScript -->
-        <div id="time">4:47:00 PM</div>
+        
+        <!-- Digital Clock (ID changed from 'time') -->
+        <div id="digital-clock">4:47:00 PM</div>
+        
+        <!-- Analog Clock (New) -->
+        <div id="analog-clock">
+            <div class="clock-face">
+                <!-- Numbers -->
+                <div class="number n1">1</div>
+                <div class="number n2">2</div>
+                <div class="number n3">3</div>
+                <div class="number n4">4</div>
+                <div class="number n5">5</div>
+                <div class="number n6">6</div>
+                <div class="number n7">7</div>
+                <div class="number n8">8</div>
+                <div class="number n9">9</div>
+                <div class="number n10">10</div>
+                <div class="number n11">11</div>
+                <div class="number n12">12</div>
+                <!-- Hands -->
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+            </div>
+        </div>
+
+        <!-- Date (Shared) -->
         <div id="date">fredag 7 november 2025</div>
+
     </main>
 
     <script>
-        // --- Clock Update Logic ---
-
-        const timeElement = document.getElementById('time');
+        // --- Get All Elements ---
+        
+        // Clocks
+        const digitalClockElement = document.getElementById('digital-clock');
+        const analogClockElement = document.getElementById('analog-clock');
         const dateElement = document.getElementById('date');
+        
+        // Analog hands
+        const hourHand = document.querySelector('.hour-hand');
+        const minuteHand = document.querySelector('.minute-hand');
+        const secondHand = document.querySelector('.second-hand');
+
+
+        // --- Clock Update Logic (runs every second) ---
 
         function updateClock() {
             const now = new Date(); // This will use the Chromebook's local time
 
-            // Format Time
-            let hours = now.getHours(); // 16 (for 4 PM)
-            const minutes = now.getMinutes(); // 47
-            const seconds = now.getSeconds(); // 00
-            const ampm = hours >= 12 ? 'PM' : 'AM'; // PM
+            // --- 1. Digital Clock Logic ---
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            let digitalHours = hours % 12;
+            digitalHours = digitalHours ? digitalHours : 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
             
-            hours = hours % 12; // 16 % 12 = 4
-            hours = hours ? hours : 12; // 4 (The hour '0' would be '12' for midnight)
-            
-            // Add leading zeros
-            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // 47
-            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds; // 00
-            
-            const timeString = `${hours}:${formattedMinutes}:${formattedSeconds} ${ampm}`; // "4:47:00 PM"
+            const timeString = `${digitalHours}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
+            digitalClockElement.textContent = timeString;
 
-            // Format Date (uses browser's local language)
-            // Since your location is Sweden, this should automatically 
-            // format the date correctly (e.g., "fredag 7 november 2025")
+            // --- 2. Analog Clock Logic ---
+            // Calculate rotation degrees
+            // (seconds / 60) * 360 = seconds * 6
+            const secondsDeg = seconds * 6;
+            // (minutes / 60) * 360 + (seconds / 60) * 6 = minutes * 6 + seconds * 0.1
+            const minutesDeg = minutes * 6 + seconds * 0.1;
+            // (hours % 12 / 12) * 360 + (minutes / 60) * 30 = (hours % 12) * 30 + minutes * 0.5
+            const hoursDeg = (hours % 12) * 30 + minutes * 0.5;
+
+            // Apply rotations. We use translateX(-50%) because 'left: 50%'
+            // puts the *edge* of the hand in the middle. This centers it.
+            secondHand.style.transform = `translateX(-50%) rotate(${secondsDeg}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minutesDeg}deg)`;
+            hourHand.style.transform = `translateX(-50%) rotate(${hoursDeg}deg)`;
+
+            // --- 3. Date Logic (Shared) ---
             const dateOptions = {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             };
-            // 'undefined' locale uses the system's default (Swedish in your case)
             const dateString = new Intl.DateTimeFormat(undefined, dateOptions).format(now);
-            
-            // Update HTML
-            timeElement.textContent = timeString;
             dateElement.textContent = dateString;
         }
 
@@ -111,38 +245,47 @@
         setInterval(updateClock, 1000);
 
 
+        // --- NEW: Clock View Toggle (runs every 30 seconds) ---
+
+        function toggleClockView() {
+            // Check if digital clock is visible
+            const isDigitalVisible = digitalClockElement.style.display !== 'none';
+            
+            if (isDigitalVisible) {
+                // Hide digital, show analog
+                digitalClockElement.style.display = 'none';
+                analogClockElement.style.display = 'flex'; // Use 'flex' to enable centering
+            } else {
+                // Hide analog, show digital
+                digitalClockElement.style.display = 'block';
+                analogClockElement.style.display = 'none';
+            }
+            console.log('Toggled clock view');
+        }
+
+        // Run the toggle every 30 seconds (30,000 milliseconds)
+        setInterval(toggleClockView, 30000);
+
         // --- Screen Wake Lock (to prevent sleep) ---
+        // (This code is unchanged and runs in the background)
 
         let wakeLock = null;
 
-        /**
-         * This function aggressively requests the Screen Wake Lock.
-         * It "jiggles" the lock by releasing any old one
-         * and requesting a new one.
-         */
         const forceWakeLock = async () => {
-            // Check if the API is supported
             if ('wakeLock' in navigator) {
                 try {
-                    // Release any existing lock. This is the "jiggle".
                     if (wakeLock) {
                         await wakeLock.release();
                         wakeLock = null;
                         console.log('Released existing Wake Lock for "jiggle".');
                     }
-                    
-                    // Request a new lock
                     wakeLock = await navigator.wakeLock.request('screen');
                     console.log('Screen Wake Lock acquired/refreshed.');
-
-                    // Listen for release events (e.g., system override)
                     wakeLock.addEventListener('release', () => {
                         console.log('Screen Wake Lock was released by the system.');
                         wakeLock = null;
                     });
-
                 } catch (err) {
-                    // This can happen if the page is not visible
                     console.error('Failed to acquire Wake Lock:', err.name, err.message);
                 }
             } else {
@@ -150,15 +293,11 @@
             }
         };
 
-        // 1. Request the lock immediately on load.
+        // 1. Request the lock immediately.
         forceWakeLock();
-
-        // 2. Re-request (jiggle) the lock every 5 minutes (300,000 milliseconds)
-        //    This fights any "ghost policies".
+        // 2. "Jiggle" the lock every 5 minutes.
         setInterval(forceWakeLock, 300000);
-
-        // 3. Re-request the lock immediately when the tab becomes visible
-        //    (in case the Kiosk app lost focus and released the lock)
+        // 3. Request lock when tab becomes visible.
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 console.log('Page is visible again, forcing Wake Lock.');
