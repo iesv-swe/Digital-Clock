@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital & Analog Clock</title>
     
-    <!-- Google Font 'Inter' -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Google Font 'Inter' --><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
@@ -15,6 +14,8 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            overflow: hidden; /* Prevent scrollbars if elements slightly exceed bounds */
+            position: relative; /* For absolute positioning of logo */
         }
 
         body {
@@ -22,8 +23,8 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background-color: #000000;
-            color: #FFFFFF;
+            background-color: #FFFFFF; 
+            color: #000000;         
             font-family: 'Inter', sans-serif;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -36,7 +37,6 @@
             text-align: center;
             /* Flips the entire container 180 degrees */
             transform: rotate(180deg); 
-            /* This container will hold the date and the swappable clock */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -48,26 +48,25 @@
             font-size: 15vw;
             font-weight: 700;
             line-height: 1.1;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
             /* 'display' will be toggled by JS */
         }
 
         /* --- Analog Clock --- */
         #analog-clock {
-            width: 50vw; /* Responsive width */
-            height: 50vw; /* Responsive height */
-            /* 'display' will be toggled by JS */
+            width: 45vw; /* Adjusted for less clipping */
+            height: 45vw; /* Adjusted for less clipping */
             display: none; 
             justify-content: center;
             align-items: center;
-            margin-bottom: 2vw; /* Add some space between clock and date */
+            margin-bottom: 2vw; 
         }
 
         .clock-face {
             position: relative;
             width: 100%;
             height: 100%;
-            border: 0.5vw solid white;
+            border: 0.5vw solid black; 
             border-radius: 50%;
         }
 
@@ -76,7 +75,7 @@
             bottom: 50%;
             left: 50%;
             transform-origin: bottom center;
-            background-color: white;
+            background-color: black; 
         }
 
         .hour-hand {
@@ -97,7 +96,7 @@
             width: 0.3vw;
             height: 40%;
             transform: translateX(-50%);
-            background-color: #FF0000; /* Red second hand */
+            background-color: #FF0000; 
         }
 
         .center-dot {
@@ -107,7 +106,7 @@
             transform: translate(-50%, -50%);
             width: 2vw;
             height: 2vw;
-            background-color: white;
+            background-color: black; 
             border-radius: 50%;
         }
         
@@ -120,19 +119,19 @@
             font-weight: 700;
         }
 
-        /* Position each number around the clock */
-        .n1 { transform: translate(-50%, -50%) rotate(30deg) translate(0, -21vw) rotate(-30deg); }
-        .n2 { transform: translate(-50%, -50%) rotate(60deg) translate(0, -21vw) rotate(-60deg); }
-        .n3 { transform: translate(-50%, -50%) rotate(90deg) translate(0, -21vw) rotate(-90deg); }
-        .n4 { transform: translate(-50%, -50%) rotate(120deg) translate(0, -21vw) rotate(-120deg); }
-        .n5 { transform: translate(-50%, -50%) rotate(150deg) translate(0, -21vw) rotate(-150deg); }
-        .n6 { transform: translate(-50%, -50%) rotate(180deg) translate(0, -21vw) rotate(-180deg); }
-        .n7 { transform: translate(-50%, -50%) rotate(210deg) translate(0, -21vw) rotate(-210deg); }
-        .n8 { transform: translate(-50%, -50%) rotate(240deg) translate(0, -21vw) rotate(-240deg); }
-        .n9 { transform: translate(-50%, -50%) rotate(270deg) translate(0, -21vw) rotate(-270deg); }
-        .n10 { transform: translate(-50%, -50%) rotate(300deg) translate(0, -21vw) rotate(-300deg); }
-        .n11 { transform: translate(-50%, -50%) rotate(330deg) translate(0, -21vw) rotate(-330deg); }
-        .n12 { transform: translate(-50%, -50%) rotate(360deg) translate(0, -21vw) rotate(-360deg); }
+        /* Adjusted number positioning (21vw to 19vw based on new clock size) */
+        .n1 { transform: translate(-50%, -50%) rotate(30deg) translate(0, -19vw) rotate(-30deg); }
+        .n2 { transform: translate(-50%, -50%) rotate(60deg) translate(0, -19vw) rotate(-60deg); }
+        .n3 { transform: translate(-50%, -50%) rotate(90deg) translate(0, -19vw) rotate(-90deg); }
+        .n4 { transform: translate(-50%, -50%) rotate(120deg) translate(0, -19vw) rotate(-120deg); }
+        .n5 { transform: translate(-50%, -50%) rotate(150deg) translate(0, -19vw) rotate(-150deg); }
+        .n6 { transform: translate(-50%, -50%) rotate(180deg) translate(0, -19vw) rotate(-180deg); }
+        .n7 { transform: translate(-50%, -50%) rotate(210deg) translate(0, -19vw) rotate(-210deg); }
+        .n8 { transform: translate(-50%, -50%) rotate(240deg) translate(0, -19vw) rotate(-240deg); }
+        .n9 { transform: translate(-50%, -50%) rotate(270deg) translate(0, -19vw) rotate(-270deg); }
+        .n10 { transform: translate(-50%, -50%) rotate(300deg) translate(0, -19vw) rotate(-300deg); }
+        .n11 { transform: translate(-50%, -50%) rotate(330deg) translate(0, -19vw) rotate(-330deg); }
+        .n12 { transform: translate(-50%, -50%) rotate(360deg) translate(0, -19vw) rotate(-360deg); }
 
 
         /* --- Date (visible for both) --- */
@@ -142,20 +141,31 @@
             opacity: 0.8;
             margin-top: 10px;
         }
+
+        /* --- School Logo --- */
+        #school-logo {
+            position: absolute; /* Position relative to the body */
+            top: 2vw;          /* Distance from top */
+            right: 2vw;        /* Distance from right */
+            width: 15vw;       /* Responsive width */
+            max-width: 200px;  /* Max width to prevent it from getting too large on huge screens */
+            height: auto;      /* Maintain aspect ratio */
+            z-index: 1000;     /* Ensure it's on top of other content */
+            transform: rotate(180deg); /* Flip it 180 degrees */
+        }
     </style>
 </head>
 <body>
 
+    <img id="school-logo" src="logo.png" alt="School Logo">
+
     <main class="clock-container">
         
-        <!-- Digital Clock (ID changed from 'time') -->
-        <div id="digital-clock">4:47:00 PM</div>
+        <!-- Digital Clock (ID changed from 'time') --><div id="digital-clock">4:47:00 PM</div>
         
-        <!-- Analog Clock (New) -->
-        <div id="analog-clock">
+        <!-- Analog Clock (New) --><div id="analog-clock">
             <div class="clock-face">
-                <!-- Numbers -->
-                <div class="number n1">1</div>
+                <!-- Numbers --><div class="number n1">1</div>
                 <div class="number n2">2</div>
                 <div class="number n3">3</div>
                 <div class="number n4">4</div>
@@ -167,16 +177,14 @@
                 <div class="number n10">10</div>
                 <div class="number n11">11</div>
                 <div class="number n12">12</div>
-                <!-- Hands -->
-                <div class="hand hour-hand"></div>
+                <!-- Hands --><div class="hand hour-hand"></div>
                 <div class="hand minute-hand"></div>
                 <div class="hand second-hand"></div>
                 <div class="center-dot"></div>
             </div>
         </div>
 
-        <!-- Date (Shared) -->
-        <div id="date">fredag 7 november 2025</div>
+        <!-- Date (Shared) --><div id="date">fredag 7 november 2025</div>
 
     </main>
 
